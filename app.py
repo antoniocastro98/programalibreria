@@ -7,7 +7,7 @@ def inicio():
     return render_template("principal.html")
 
 
-@app.route('/potencia/<base>/<exponente>')
+@app.route('/potencia/<int:base>/<int:exponente>')
 def potencia(base, exponente):
 
     if int(exponente) > 0:
@@ -28,5 +28,15 @@ def cuentaletras(palabra,letra):
         else:
             abort(404)
         return render_template('cuentaletras.html',palabra=palabra, letra=letra, apariciones=aparece)
+
+@app.route('/libros/<int:codigo>')
+def buscar(codigo):
+    doc = etree.parse('libros.xml')
+    if str(codigo) in doc.xpath("/biblioteca/libro/codigo/text()"):
+        titulo=doc.xpath("/biblioteca/libro[codigo/text()='%s']/titulo/text()"%codigo)[0]
+        autor=doc.xpath("/biblioteca/libro[codigo/text()='%s']/autor/text()"%codigo)[0]
+    else:
+        abort(404)
+    return render_template("libros.html",titulo=titulo,autor=autor)
 
 app.run(debug=True)
